@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality Test Builder - Enterprise Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #232f3e;
+            --primary-light: #37475a;
+            --accent: #ff9900;
+            --accent-hover: #e88b00;
+            --success: #067d68;
+            --error: #d13212;
+            --warning: #f79400;
+            --bg-light: #fafafa;
+            --bg-white: #ffffff;
+            --text-primary: #0f1111;
+            --text-secondary: #565959;
+            --border: #d5d9d9;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+            --border-radius: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Amazon Ember', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e8ecef 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "🧠";
+            font-size: 1.8rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .sidebar-content {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: var(--bg-white);
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-white);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .question-item {
+            background: #f8f9fa;
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .question-item:hover {
+            border-color: var(--accent);
+        }
+
+        .question-header {
+            padding: 1rem 1.5rem;
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .question-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .question-content {
+            padding: 1rem 1.5rem;
+        }
+
+        .option-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            margin-bottom: 0.5rem;
+        }
+
+        .option-text {
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .outcome-item {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: 2px solid #fc8181;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .outcome-item.type-1 { 
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); 
+            border-color: #68d391; 
+        }
+        .outcome-item.type-2 { 
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); 
+            border-color: #60a5fa; 
+        }
+        .outcome-item.type-3 { 
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); 
+            border-color: #f59e0b; 
+        }
+        .outcome-item.type-4 { 
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%); 
+            border-color: #a78bfa; 
+        }
+
+        .outcome-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .outcome-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .preview-area {
+            background: var(--bg-white);
+            border: 2px dashed var(--border);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .quiz-preview {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .quiz-header {
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .quiz-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-description {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .quiz-content {
+            padding: 2rem;
+        }
+
+        .quiz-question {
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-white);
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+            background: #fff9f0;
+        }
+
+        .quiz-option.selected {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--success);
+        }
+
+        .result-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .sharing-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+        }
+
+        .share-url {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            word-break: break-all;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .tab-navigation {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .tab-button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-card {
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .analytics-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .analytics-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--error); }
+        .notification.warning { background: var(--warning); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .header-content {
+                padding: 0 1rem;
+            }
+            
+            .stats {
+                display: none;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                PersonalityTest Pro
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalQuizzes">0</div>
+                    <div>Quizzes Created</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalViews">0</div>
+                    <div>Total Views</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgCompletion">0%</div>
+                    <div>Avg. Completion</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Quiz Builder</h3>
+            </div>
+            <div class="sidebar-content">
+                <div class="form-group">
+                    <label class="form-label" for="quizTitle">Quiz Title *</label>
+                    <input type="text" id="quizTitle" class="form-input" placeholder="What's Your Personality Type?" maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="quizDescription">Description</label>
+                    <textarea id="quizDescription" class="form-textarea" placeholder="Discover your unique personality traits..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="quizCategory">Category</label>
+                    <select id="quizCategory" class="form-select">
+                        <option value="personality">Personality</option>
+                        <option value="lifestyle">Lifestyle</option>
+                        <option value="career">Career</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="education">Education</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="quizTheme">Theme</label>
+                    <select id="quizTheme" class="form-select">
+                        <option value="default">Professional</option>
+                        <option value="colorful">Colorful</option>
+                        <option value="minimal">Minimal</option>
+                        <option value="dark">Dark Mode</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="addQuestion">
+                    <span>➕</span> Add Question
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="tab-navigation">
+                <button class="tab-button active" data-tab="builder">Quiz Builder</button>
+                <button class="tab-button" data-tab="outcomes">Outcomes</button>
+                <button class="tab-button" data-tab="preview">Preview</button>
+                <button class="tab-button" data-tab="analytics">Analytics</button>
+            </div>
+
+            <div id="builderTab" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Questions</h2>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-small" id="importQuestions">📁 Import</button>
+                            <button class="btn btn-secondary btn-small" id="exportQuestions">💾 Export</button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div id="questionsList">
+                            <div class="preview-area">
+                                <h3>No questions yet</h3>
+                                <p>Click "Add Question" to start building your quiz</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="outcomesTab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Quiz Outcomes</h2>
+                        <button class="btn btn-primary btn-small" id="addOutcome">
+                            <span>➕</span> Add Outcome
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div id="outcomesList">
+                            <div class="preview-area">
+                                <h3>No outcomes defined</h3>
+                                <p>Create different personality types or results for your quiz</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="previewTab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Quiz Preview</h2>
+                        <div class="btn-group">
+                            <button class="btn btn-primary btn-small" id="publishQuiz">🚀 Publish Quiz</button>
+                            <button class="btn btn-secondary btn-small" id="shareQuiz">🔗 Share Link</button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div id="quizPreview">
+                            <div class="preview-area">
+                                <h3>Preview will appear here</h3>
+                                <p>Add questions and outcomes to see your quiz in action</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analyticsTab" class="tab-content">
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-value" id="quizViews">0</div>
+                        <div class="analytics-label">Total Views</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-value" id="quizCompletions">0</div>
+                        <div class="analytics-label">Completions</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-value" id="avgScore">0%</div>
+                        <div class="analytics-label">Completion Rate</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-value" id="topOutcome">N/A</div>
+                        <div class="analytics-label">Most Popular Outcome</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Response Distribution</h3>
+                    </div>
+                    <div class="card-content">
+                        <div id="responseChart">
+                            <div class="preview-area">
+                                <h3>No data yet</h3>
+                                <p>Analytics will appear after quiz responses are collected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Application State Management
+        class QuizBuilder {
+            constructor() {
+                this.state = {
+                    quiz: {
+                        title: '',
+                        description: '',
+                        category: 'personality',
+                        theme: 'default',
+                        questions: [],
+                        outcomes: [],
+                        id: null,
+                        views: 0,
+                        completions: 0,
+                        created: new Date()
+                    },
+                    currentTab: 'builder',
+                    isPreviewMode: false,
+                    analytics: {
+                        totalQuizzes: this.getStoredQuizzes().length,
+                        totalViews: 0,
+                        avgCompletion: 0
+                    }
+                };
+                
+                this.init();
+                this.updateStats();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadQuiz();
+                this.updatePreview();
+            }
+
+            bindEvents() {
+                // Tab navigation
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+
+                // Form inputs
+                document.getElementById('quizTitle').addEventListener('input', (e) => {
+                    this.state.quiz.title = e.target.value;
+                    this.updatePreview();
+                    this.showNotification('Title updated', 'success');
+                });
+
+                document.getElementById('quizDescription').addEventListener('input', (e) => {
+                    this.state.quiz.description = e.target.value;
+                    this.updatePreview();
+                });
+
+                document.getElementById('quizCategory').addEventListener('change', (e) => {
+                    this.state.quiz.category = e.target.value;
+                    this.updatePreview();
+                });
+
+                document.getElementById('quizTheme').addEventListener('change', (e) => {
+                    this.state.quiz.theme = e.target.value;
+                    this.updatePreview();
+                });
+
+                // Buttons
+                document.getElementById('addQuestion').addEventListener('click', () => {
+                    this.addQuestion();
+                });
+
+                document.getElementById('addOutcome').addEventListener('click', () => {
+                    this.addOutcome();
+                });
+
+                document.getElementById('publishQuiz').addEventListener('click', () => {
+                    this.publishQuiz();
+                });
+
+                document.getElementById('shareQuiz').addEventListener('click', () => {
+                    this.shareQuiz();
+                });
+
+                document.getElementById('importQuestions').addEventListener('click', () => {
+                    this.importQuestions();
+                });
+
+                document.getElementById('exportQuestions').addEventListener('click', () => {
+                    this.exportQuestions();
+                });
+            }
+
+            switchTab(tabName) {
+                // Update tab buttons
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.toggle('active', content.id === tabName + 'Tab');
+                });
+
+                this.state.currentTab = tabName;
+                
+                if (tabName === 'preview') {
+                    this.updatePreview();
+                } else if (tabName === 'analytics') {
+                    this.updateAnalytics();
+                }
+            }
+
+            addQuestion() {
+                const question = {
+                    id: Date.now(),
+                    text: '',
+                    options: [
+                        { text: '', outcome: '', points: 1 },
+                        { text: '', outcome: '', points: 2 }
+                    ],
+                    required: true
+                };
+
+                this.state.quiz.questions.push(question);
+                this.renderQuestions();
+                this.updatePreview();
+                this.showNotification('Question added successfully', 'success');
+            }
+
+            addOutcome() {
+                const outcomeTypes = ['type-1', 'type-2', 'type-3', 'type-4'];
+                const outcome = {
+                    id: Date.now(),
+                    title: '',
+                    description: '',
+                    type: outcomeTypes[this.state.quiz.outcomes.length % outcomeTypes.length],
+                    minScore: 0,
+                    maxScore: 100,
+                    count: 0
+                };
+
+                this.state.quiz.outcomes.push(outcome);
+                this.renderOutcomes();
+                this.updatePreview();
+                this.showNotification('Outcome added successfully', 'success');
+            }
+
+            renderQuestions() {
+                const container = document.getElementById('questionsList');
+                
+                if (this.state.quiz.questions.length === 0) {
+                    container.innerHTML = `
+                        <div class="preview-area">
+                            <h3>No questions yet</h3>
+                            <p>Click "Add Question" to start building your quiz</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = this.state.quiz.questions.map(question => `
+                    <div class="question-item fade-in" data-id="${question.id}">
+                        <div class="question-header">
+                            <input type="text" class="question-text" placeholder="Enter your question..." 
+                                   value="${question.text}" data-question-id="${question.id}">
+                            <div class="question-controls">
+                                <button class="btn btn-secondary btn-small" onclick="quizBuilder.addOption(${question.id})">
+                                    ➕ Option
+                                </button>
+                                <button class="btn btn-danger btn-small" onclick="quizBuilder.deleteQuestion(${question.id})">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <div class="question-content">
+                            ${question.options.map((option, index) => `
+                                <div class="option-item">
+                                    <input type="text" class="option-text" placeholder="Option ${index + 1}" 
+                                           value="${option.text}" 
+                                           data-question-id="${question.id}" 
+                                           data-option-index="${index}">
+                                    <select class="form-select" style="width: 120px;" 
+                                            data-question-id="${question.id}" 
+                                            data-option-index="${index}" 
+                                            data-field="outcome">
+                                        <option value="">Select outcome</option>
+                                        ${this.state.quiz.outcomes.map(outcome => `
+                                            <option value="${outcome.id}" ${option.outcome == outcome.id ? 'selected' : ''}>
+                                                ${outcome.title || 'Untitled'}
+                                            </option>
+                                        `).join('')}
+                                    </select>
+                                    <input type="number" class="form-input" style="width: 80px;" 
+                                           placeholder="Points" min="1" max="10" 
+                                           value="${option.points}" 
+                                           data-question-id="${question.id}" 
+                                           data-option-index="${index}" 
+                                           data-field="points">
+                                    <button class="btn btn-danger btn-small" onclick="quizBuilder.deleteOption(${question.id}, ${index})">
+                                        ❌
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+
+                // Bind events for dynamic inputs
+                this.bindQuestionEvents();
+            }
+
+            renderOutcomes() {
+                const container = document.getElementById('outcomesList');
+                
+                if (this.state.quiz.outcomes.length === 0) {
+                    container.innerHTML = `
+                        <div class="preview-area">
+                            <h3>No outcomes defined</h3>
+                            <p>Create different personality types or results for your quiz</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = this.state.quiz.outcomes.map(outcome => `
+                    <div class="outcome-item ${outcome.type} fade-in" data-id="${outcome.id}">
+                        <div class="outcome-header">
+                            <input type="text" class="outcome-title" placeholder="Outcome Title" 
+                                   value="${outcome.title}" data-outcome-id="${outcome.id}" data-field="title">
+                            <button class="btn btn-danger btn-small" onclick="quizBuilder.deleteOutcome(${outcome.id})">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                        <textarea class="form-textarea outcome-description" placeholder="Describe this personality type..." 
+                                  data-outcome-id="${outcome.id}" data-field="description">${outcome.description}</textarea>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <div>
+                                <label class="form-label">Min Score</label>
+                                <input type="number" class="form-input" style="width: 100px;" 
+                                       value="${outcome.minScore}" 
+                                       data-outcome-id="${outcome.id}" 
+                                       data-field="minScore">
+                            </div>
+                            <div>
+                                <label class="form-label">Max Score</label>
+                                <input type="number" class="form-input" style="width: 100px;" 
+                                       value="${outcome.maxScore}" 
+                                       data-outcome-id="${outcome.id}" 
+                                       data-field="maxScore">
+                            </div>
+                            <div>
+                                <label class="form-label">Responses</label>
+                                <div class="analytics-value" style="font-size: 1rem;">${outcome.count || 0}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Bind events for outcome inputs
+                this.bindOutcomeEvents();
+            }
+
+            bindQuestionEvents() {
+                // Question text inputs
+                document.querySelectorAll('.question-text').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const questionId = parseInt(e.target.dataset.questionId);
+                        const question = this.state.quiz.questions.find(q => q.id === questionId);
+                        if (question) {
+                            question.text = e.target.value;
+                            this.updatePreview();
+                        }
+                    });
+                });
+
+                // Option text inputs
+                document.querySelectorAll('.option-text').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        this.updateOption(e.target, 'text', e.target.value);
+                    });
+                });
+
+                // Option selects and inputs
+                document.querySelectorAll('[data-question-id][data-option-index]').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        this.updateOption(e.target, e.target.dataset.field, e.target.value);
+                    });
+                    
+                    if (input.type !== 'select-one') {
+                        input.addEventListener('input', (e) => {
+                            this.updateOption(e.target, e.target.dataset.field, e.target.value);
+                        });
+                    }
+                });
+            }
+
+            bindOutcomeEvents() {
+                document.querySelectorAll('[data-outcome-id]').forEach(input => {
+                    const updateOutcome = () => {
+                        const outcomeId = parseInt(input.dataset.outcomeId);
+                        const field = input.dataset.field;
+                        const outcome = this.state.quiz.outcomes.find(o => o.id === outcomeId);
+                        if (outcome) {
+                            outcome[field] = input.type === 'number' ? parseInt(input.value) || 0 : input.value;
+                            this.updatePreview();
+                        }
+                    };
+
+                    input.addEventListener('input', updateOutcome);
+                    input.addEventListener('change', updateOutcome);
+                });
+            }
+
+            updateOption(element, field, value) {
+                const questionId = parseInt(element.dataset.questionId);
+                const optionIndex = parseInt(element.dataset.optionIndex);
+                const question = this.state.quiz.questions.find(q => q.id === questionId);
+                
+                if (question && question.options[optionIndex]) {
+                    if (field === 'points') {
+                        question.options[optionIndex][field] = parseInt(value) || 1;
+                    } else {
+                        question.options[optionIndex][field] = value;
+                    }
+                    this.updatePreview();
+                }
+            }
+
+            addOption(questionId) {
+                const question = this.state.quiz.questions.find(q => q.id === questionId);
+                if (question) {
+                    question.options.push({
+                        text: '',
+                        outcome: '',
+                        points: question.options.length + 1
+                    });
+                    this.renderQuestions();
+                    this.showNotification('Option added', 'success');
+                }
+            }
+
+            deleteQuestion(questionId) {
+                this.state.quiz.questions = this.state.quiz.questions.filter(q => q.id !== questionId);
+                this.renderQuestions();
+                this.updatePreview();
+                this.showNotification('Question deleted', 'warning');
+            }
+
+            deleteOption(questionId, optionIndex) {
+                const question = this.state.quiz.questions.find(q => q.id === questionId);
+                if (question && question.options.length > 2) {
+                    question.options.splice(optionIndex, 1);
+                    this.renderQuestions();
+                    this.showNotification('Option deleted', 'warning');
+                } else {
+                    this.showNotification('Questions must have at least 2 options', 'error');
+                }
+            }
+
+            deleteOutcome(outcomeId) {
+                this.state.quiz.outcomes = this.state.quiz.outcomes.filter(o => o.id !== outcomeId);
+                this.renderOutcomes();
+                this.renderQuestions(); // Re-render to update outcome dropdowns
+                this.updatePreview();
+                this.showNotification('Outcome deleted', 'warning');
+            }
+
+            updatePreview() {
+                const previewContainer = document.getElementById('quizPreview');
+                
+                if (!this.state.quiz.title && this.state.quiz.questions.length === 0) {
+                    previewContainer.innerHTML = `
+                        <div class="preview-area">
+                            <h3>Preview will appear here</h3>
+                            <p>Add questions and outcomes to see your quiz in action</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const hasValidQuestions = this.state.quiz.questions.length > 0 && 
+                                        this.state.quiz.questions.some(q => q.text && q.options.some(o => o.text));
+                
+                if (!hasValidQuestions) {
+                    previewContainer.innerHTML = `
+                        <div class="preview-area">
+                            <h3>Add some questions to see preview</h3>
+                            <p>Create questions with options to preview your quiz</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                previewContainer.innerHTML = `
+                    <div class="quiz-preview">
+                        <div class="quiz-header">
+                            <h1 class="quiz-title">${this.state.quiz.title || 'Untitled Quiz'}</h1>
+                            <p class="quiz-description">${this.state.quiz.description || 'Take this quiz to discover more about yourself!'}</p>
+                        </div>
+                        <div class="quiz-content">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            ${this.renderQuizQuestions()}
+                            <div class="quiz-controls" style="text-align: center; margin-top: 2rem;">
+                                <button class="btn btn-primary" onclick="quizBuilder.simulateQuiz()">
+                                    Take Quiz (Demo)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderQuizQuestions() {
+                return this.state.quiz.questions.map((question, index) => {
+                    if (!question.text) return '';
+                    
+                    return `
+                        <div class="quiz-question" data-question="${index}">
+                            <div class="quiz-question-text">
+                                ${index + 1}. ${question.text}
+                            </div>
+                            <div class="quiz-options">
+                                ${question.options.map((option, optIndex) => {
+                                    if (!option.text) return '';
+                                    return `
+                                        <div class="quiz-option" data-question="${index}" data-option="${optIndex}">
+                                            ${option.text}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            simulateQuiz() {
+                // Simple quiz simulation
+                const options = document.querySelectorAll('.quiz-option');
+                let currentQuestion = 0;
+                let answers = [];
+
+                const showQuestion = (questionIndex) => {
+                    document.querySelectorAll('.quiz-question').forEach((q, i) => {
+                        q.style.display = i === questionIndex ? 'block' : 'none';
+                    });
+                    
+                    const progress = ((questionIndex) / this.state.quiz.questions.length) * 100;
+                    document.querySelector('.progress-fill').style.width = progress + '%';
+                };
+
+                const handleOptionClick = (e) => {
+                    if (!e.target.classList.contains('quiz-option')) return;
+                    
+                    // Remove previous selections
+                    e.target.parentElement.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Select current option
+                    e.target.classList.add('selected');
+                    
+                    const questionIndex = parseInt(e.target.dataset.question);
+                    const optionIndex = parseInt(e.target.dataset.option);
+                    
+                    answers[questionIndex] = optionIndex;
+                    
+                    // Auto-advance after 1 second
+                    setTimeout(() => {
+                        if (questionIndex < this.state.quiz.questions.length - 1) {
+                            showQuestion(questionIndex + 1);
+                        } else {
+                            this.showQuizResult(answers);
+                        }
+                    }, 1000);
+                };
+
+                // Show first question and bind events
+                showQuestion(0);
+                document.addEventListener('click', handleOptionClick);
+                
+                this.showNotification('Quiz simulation started!', 'success');
+            }
+
+            showQuizResult(answers) {
+                // Calculate result based on outcomes
+                const result = this.calculateQuizResult(answers);
+                
+                const quizContent = document.querySelector('.quiz-content');
+                quizContent.innerHTML = `
+                    <div class="quiz-result">
+                        <div class="result-title">${result.title}</div>
+                        <div class="result-description">${result.description}</div>
+                        <div class="sharing-section">
+                            <h4>Share Your Result</h4>
+                            <div class="share-url">I got "${result.title}" on this personality quiz!</div>
+                            <div class="btn-group" style="justify-content: center;">
+                                <button class="btn btn-primary" onclick="quizBuilder.updatePreview()">Take Again</button>
+                                <button class="btn btn-secondary" onclick="quizBuilder.shareResult('${result.title}')">Share Result</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Update analytics
+                this.updateQuizAnalytics();
+            }
+
+            calculateQuizResult(answers) {
+                if (this.state.quiz.outcomes.length === 0) {
+                    return {
+                        title: 'Quiz Complete!',
+                        description: 'Thank you for taking our quiz. Add outcomes to see personalized results!'
+                    };
+                }
+
+                // Simple scoring: count points for each outcome
+                const outcomeScores = {};
+                
+                answers.forEach((answerIndex, questionIndex) => {
+                    const question = this.state.quiz.questions[questionIndex];
+                    if (question && question.options[answerIndex]) {
+                        const option = question.options[answerIndex];
+                        if (option.outcome) {
+                            outcomeScores[option.outcome] = (outcomeScores[option.outcome] || 0) + (option.points || 1);
+                        }
+                    }
+                });
+
+                // Find outcome with highest score
+                const topOutcomeId = Object.keys(outcomeScores).reduce((a, b) => 
+                    outcomeScores[a] > outcomeScores[b] ? a : b
+                );
+
+                const outcome = this.state.quiz.outcomes.find(o => o.id == topOutcomeId) || this.state.quiz.outcomes[0];
+                
+                // Update outcome count
+                outcome.count = (outcome.count || 0) + 1;
+                
+                return {
+                    title: outcome.title || 'Your Result',
+                    description: outcome.description || 'Thanks for taking our quiz!'
+                };
+            }
+
+            publishQuiz() {
+                if (!this.validateQuiz()) return;
+
+                // Generate unique ID and save quiz
+                this.state.quiz.id = this.state.quiz.id || Date.now().toString();
+                this.state.quiz.published = new Date();
+                
+                this.saveQuiz();
+                this.updateStats();
+                
+                const shareUrl = window.location.origin + window.location.pathname + '#quiz=' + this.state.quiz.id;
+                
+                document.querySelector('.quiz-content').innerHTML = `
+                    <div class="quiz-result">
+                        <div class="result-title">🎉 Quiz Published Successfully!</div>
+                        <div class="result-description">Your quiz is now live and ready to be shared.</div>
+                        <div class="sharing-section">
+                            <h4>Share Your Quiz</h4>
+                            <div class="share-url">${shareUrl}</div>
+                            <div class="btn-group" style="justify-content: center; gap: 1rem;">
+                                <button class="btn btn-primary" onclick="navigator.clipboard.writeText('${shareUrl}').then(() => quizBuilder.showNotification('Link copied!', 'success'))">
+                                    📋 Copy Link
+                                </button>
+                                <button class="btn btn-secondary" onclick="quizBuilder.shareQuiz()">🔗 Share</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                this.showNotification('Quiz published successfully!', 'success');
+            }
+
+            validateQuiz() {
+                const errors = [];
+                
+                if (!this.state.quiz.title.trim()) {
+                    errors.push('Quiz title is required');
+                }
+                
+                if (this.state.quiz.questions.length === 0) {
+                    errors.push('Add at least one question');
+                }
+                
+                if (this.state.quiz.outcomes.length === 0) {
+                    errors.push('Add at least one outcome');
+                }
+                
+                const hasIncompleteQuestions = this.state.quiz.questions.some(q => 
+                    !q.text.trim() || q.options.some(o => !o.text.trim())
+                );
+                
+                if (hasIncompleteQuestions) {
+                    errors.push('All questions must have text and complete options');
+                }
+                
+                const hasIncompleteOutcomes = this.state.quiz.outcomes.some(o => !o.title.trim());
+                
+                if (hasIncompleteOutcomes) {
+                    errors.push('All outcomes must have titles');
+                }
+                
+                if (errors.length > 0) {
+                    this.showNotification(errors[0], 'error');
+                    return false;
+                }
+                
+                return true;
+            }
+
+            shareQuiz() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: this.state.quiz.title,
+                        text: this.state.quiz.description,
+                        url: window.location.origin + '#quiz=' + this.state.quiz.id
+                    });
+                } else {
+                    const url = window.location.origin + '#quiz=' + this.state.quiz.id;
+                    navigator.clipboard.writeText(url).then(() => {
+                        this.showNotification('Quiz link copied to clipboard!', 'success');
+                    });
+                }
+            }
+
+            shareResult(result) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: `I got "${result}" on this quiz!`,
+                        text: `Check out this personality quiz: ${this.state.quiz.title}`,
+                        url: window.location.href
+                    });
+                } else {
+                    const text = `I got "${result}" on this quiz: ${this.state.quiz.title}`;
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.showNotification('Result copied to clipboard!', 'success');
+                    });
+                }
+            }
+
+            importQuestions() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const data = JSON.parse(e.target.result);
+                                if (data.questions) {
+                                    this.state.quiz.questions = data.questions;
+                                    this.renderQuestions();
+                                    this.updatePreview();
+                                    this.showNotification('Questions imported successfully!', 'success');
+                                }
+                            } catch (error) {
+                                this.showNotification('Error importing questions', 'error');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+                input.click();
+            }
+
+            exportQuestions() {
+                const data = {
+                    title: this.state.quiz.title,
+                    description: this.state.quiz.description,
+                    questions: this.state.quiz.questions,
+                    outcomes: this.state.quiz.outcomes,
+                    exported: new Date()
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = (this.state.quiz.title || 'quiz') + '.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                this.showNotification('Quiz exported successfully!', 'success');
+            }
+
+            updateAnalytics() {
+                // Simulate analytics data
+                const analytics = this.getAnalyticsData();
+                
+                document.getElementById('quizViews').textContent = analytics.views;
+                document.getElementById('quizCompletions').textContent = analytics.completions;
+                document.getElementById('avgScore').textContent = analytics.completionRate + '%';
+                document.getElementById('topOutcome').textContent = analytics.topOutcome;
+                
+                // Simple response chart
+                const chartContainer = document.getElementById('responseChart');
+                if (analytics.responses.length > 0) {
+                    chartContainer.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            ${analytics.responses.map(response => `
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>${response.outcome}</span>
+                                    <div style="flex: 1; margin: 0 1rem; background: var(--border); height: 8px; border-radius: 4px;">
+                                        <div style="width: ${response.percentage}%; height: 100%; background: var(--accent); border-radius: 4px;"></div>
+                                    </div>
+                                    <span>${response.count} (${response.percentage}%)</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    chartContainer.innerHTML = `
+                        <div class="preview-area">
+                            <h3>No data yet</h3>
+                            <p>Analytics will appear after quiz responses are collected</p>
+                        </div>
+                    `;
+                }
+            }
+
+            getAnalyticsData() {
+                // Simulate analytics data based on current quiz
+                const totalResponses = this.state.quiz.outcomes.reduce((sum, outcome) => sum + (outcome.count || 0), 0);
+                const views = Math.max(totalResponses * 3, 0);
+                const completionRate = views > 0 ? Math.round((totalResponses / views) * 100) : 0;
+                
+                const responses = this.state.quiz.outcomes.map(outcome => {
+                    const count = outcome.count || 0;
+                    const percentage = totalResponses > 0 ? Math.round((count / totalResponses) * 100) : 0;
+                    return {
+                        outcome: outcome.title || 'Untitled',
+                        count,
+                        percentage
+                    };
+                }).filter(r => r.count > 0);
+                
+                const topOutcome = responses.length > 0 
+                    ? responses.reduce((a, b) => a.count > b.count ? a : b).outcome 
+                    : 'N/A';
+                
+                return {
+                    views,
+                    completions: totalResponses,
+                    completionRate,
+                    topOutcome,
+                    responses
+                };
+            }
+
+            updateQuizAnalytics() {
+                this.state.quiz.views = (this.state.quiz.views || 0) + 1;
+                this.saveQuiz();
+                this.updateStats();
+            }
+
+            saveQuiz() {
+                const quizzes = this.getStoredQuizzes();
+                const existingIndex = quizzes.findIndex(q => q.id === this.state.quiz.id);
+                
+                if (existingIndex >= 0) {
+                    quizzes[existingIndex] = { ...this.state.quiz };
+                } else {
+                    quizzes.push({ ...this.state.quiz });
+                }
+                
+                // Store in memory (localStorage not available)
+                window.quizData = quizzes;
+            }
+
+            loadQuiz() {
+                // Check for quiz ID in URL hash
+                const hash = window.location.hash;
+                if (hash.startsWith('#quiz=')) {
+                    const quizId = hash.substring(6);
+                    const quizzes = this.getStoredQuizzes();
+                    const quiz = quizzes.find(q => q.id === quizId);
+                    if (quiz) {
+                        this.state.quiz = { ...quiz };
+                        this.loadQuizData();
+                    }
+                }
+            }
+
+            loadQuizData() {
+                document.getElementById('quizTitle').value = this.state.quiz.title || '';
+                document.getElementById('quizDescription').value = this.state.quiz.description || '';
+                document.getElementById('quizCategory').value = this.state.quiz.category || 'personality';
+                document.getElementById('quizTheme').value = this.state.quiz.theme || 'default';
+                
+                this.renderQuestions();
+                this.renderOutcomes();
+                this.updatePreview();
+            }
+
+            getStoredQuizzes() {
+                return window.quizData || [];
+            }
+
+            updateStats() {
+                const quizzes = this.getStoredQuizzes();
+                const totalViews = quizzes.reduce((sum, quiz) => sum + (quiz.views || 0), 0);
+                const totalCompletions = quizzes.reduce((sum, quiz) => 
+                    sum + quiz.outcomes.reduce((outcomeSum, outcome) => outcomeSum + (outcome.count || 0), 0), 0
+                );
+                const avgCompletion = totalViews > 0 ? Math.round((totalCompletions / totalViews) * 100) : 0;
+                
+                document.getElementById('totalQuizzes').textContent = quizzes.length;
+                document.getElementById('totalViews').textContent = totalViews;
+                document.getElementById('avgCompletion').textContent = avgCompletion + '%';
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialize application
+        const quizBuilder = new QuizBuilder();
+        
+        // Global helper functions for onclick handlers
+        window.quizBuilder = quizBuilder;
+        
+        // Auto-save functionality
+        setInterval(() => {
+            if (quizBuilder.state.quiz.questions.length > 0 || quizBuilder.state.quiz.title) {
+                quizBuilder.saveQuiz();
+            }
+        }, 30000); // Auto-save every 30 seconds
+        
+        console.log('🧠 PersonalityTest Pro - Enterprise Edition Loaded');
+        console.log('Features: Advanced Quiz Builder, Real-time Preview, Analytics Dashboard, Export/Import');
+    </script>
+</body>
+</html>
