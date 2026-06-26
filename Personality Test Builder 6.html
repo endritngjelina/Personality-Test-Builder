@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality Test Builder Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .builder-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(10px);
+        }
+
+        .preview-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            position: sticky;
+            top: 2rem;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-left: 0.5rem;
+        }
+
+        .section-header i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .question-item {
+            background: var(--gray-100);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .answer-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .outcome-item {
+            background: var(--gray-100);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: var(--dark);
+            box-shadow: var(--shadow-md);
+        }
+
+        .preview-quiz {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .preview-question {
+            margin-bottom: 1.5rem;
+        }
+
+        .preview-answer {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .preview-answer:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .share-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .share-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .analytics-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .analytics-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .floating-action {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .floating-action:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-panel {
+                position: static;
+                max-height: none;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Enhanced UI/UX Classes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 32px 0 rgba(31, 38, 135, 0.37),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .pulse-glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pulse-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.8s;
+        }
+
+        .pulse-glow:hover::before {
+            left: 100%;
+        }
+
+        .micro-interaction {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .micro-interaction:hover {
+            transform: scale(1.02);
+        }
+
+        .micro-interaction:active {
+            transform: scale(0.98);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-gradient:hover::before {
+            opacity: 1;
+        }
+
+        .btn-gradient > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .smooth-border {
+            border-radius: 16px;
+            transition: border-radius 0.3s ease;
+        }
+
+        .smooth-border:hover {
+            border-radius: 24px;
+        }
+
+        .floating-shadow {
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.05),
+                0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .floating-shadow:hover {
+            box-shadow: 
+                0 12px 24px rgba(0, 0, 0, 0.1),
+                0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .neon-glow {
+            position: relative;
+        }
+
+        .neon-glow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            box-shadow: 0 0 20px var(--primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .neon-glow:hover::after {
+            opacity: 0.3;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .morphing-border {
+            position: relative;
+            border: 2px solid transparent;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .morphing-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 12px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .morphing
+        .morphing-border:hover::before {
+            opacity: 1;
+        }
+
+        .interactive-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(99, 102, 241, 0.2),
+                0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 50px 50px;
+            animation: progress-stripes 1s linear infinite;
+        }
+
+        @keyframes progress-stripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 0; }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success { background: var(--success); }
+        .badge-warning { background: var(--warning); }
+        .badge-danger { background: var(--danger); }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .ripple-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-effect::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .ripple-effect:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .blur-backdrop {
+            backdrop-filter: blur(12px) saturate(180%);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .animated-gradient {
+            background: linear-gradient(270deg, #667eea, #764ba2, #667eea, #764ba2);
+            background-size: 800% 800%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .shake-animation {
+            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .focus-ring {
+            transition: box-shadow 0.2s ease;
+        }
+
+        .focus-ring:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        .elevated-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .elevated-card:hover {
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .premium-input {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .premium-input:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: var(--primary);
+            box-shadow: 
+                0 0 0 3px rgba(99, 102, 241, 0.1),
+                0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: var(--gray-100);
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .typing-indicator.active {
+            opacity: 1;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--gray-600);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .countdown-circle {
+            width: 60px;
+            height: 60px;
+            position: relative;
+        }
+
+        .countdown-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .countdown-circle circle {
+            fill: none;
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+
+        .countdown-bg { stroke: var(--gray-200); }
+        .countdown-progress { 
+            stroke: var(--primary);
+            stroke-dasharray: 188.4;
+            stroke-dashoffset: 188.4;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid var(--dark);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .tooltip:hover::before,
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> Personality Test Builder Pro</h1>
+            <p>Create engaging, shareable personality quizzes with professional styling</p>
+        </div>
+
+        <div class="main-content">
+            <div class="builder-panel glass-card hover-lift smooth-border">
+                <div class="tabs">
+                    <div class="tab active micro-interaction ripple-effect" onclick="switchTab('basic')">
+                        <i class="fas fa-info-circle"></i> Basic Info
+                    </div>
+                    <div class="tab micro-interaction ripple-effect" onclick="switchTab('questions')">
+                        <i class="fas fa-question-circle"></i> Questions
+                    </div>
+                    <div class="tab micro-interaction ripple-effect" onclick="switchTab('outcomes')">
+                        <i class="fas fa-trophy"></i> Outcomes
+                    </div>
+                    <div class="tab micro-interaction ripple-effect" onclick="switchTab('styling')">
+                        <i class="fas fa-palette"></i> Styling
+                    </div>
+                    <div class="tab micro-interaction ripple-effect" onclick="switchTab('analytics')">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+
+                <!-- Basic Info Tab -->
+                <div class="tab-content active slide-in-left" id="basic-tab">
+                    <div class="section elevated-card floating-shadow morphing-border">
+                        <div class="section-header">
+                            <i class="fas fa-edit text-gradient"></i>
+                            <h3 class="text-gradient">Quiz Information</h3>
+                            <span class="badge bounce-in" style="margin-left: auto;">Step 1</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quiz Title</label>
+                            <input type="text" class="form-input premium-input focus-ring" id="quiz-title" placeholder="Which Disney Character Are You?" onchange="updatePreview()" oninput="showTypingIndicator()">
+                            <div class="typing-indicator" id="typing-indicator-title">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <span style="margin-left: 8px; font-size: 12px; color: var(--gray-600);">Updating preview...</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-input form-textarea premium-input focus-ring" id="quiz-description" placeholder="Discover your inner Disney character with this fun personality quiz!" onchange="updatePreview()" oninput="showTypingIndicator()"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label tooltip" data-tooltip="Choose the category that best fits your quiz">Category</label>
+                            <select class="form-input premium-input focus-ring" id="quiz-category" onchange="updatePreview()">
+                                <option value="personality">🧠 Personality</option>
+                                <option value="lifestyle">🌟 Lifestyle</option>
+                                <option value="entertainment">🎭 Entertainment</option>
+                                <option value="career">💼 Career</option>
+                                <option value="relationships">💕 Relationships</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions Tab -->
+                <div class="tab-content slide-in-left" id="questions-tab">
+                    <div class="section elevated-card floating-shadow morphing-border">
+                        <div class="section-header">
+                            <i class="fas fa-question-circle text-gradient"></i>
+                            <h3 class="text-gradient">Quiz Questions</h3>
+                            <span class="badge bounce-in">Step 2</span>
+                            <button class="btn btn-primary btn-sm neon-glow pulse-glow" style="margin-left: auto;" onclick="addQuestion()">
+                                <i class="fas fa-plus"></i> Add Question
+                            </button>
+                        </div>
+                        <div id="questions-container">
+                            <!-- Questions will be added here -->
+                        </div>
+                        <div class="tooltip" data-tooltip="Drag questions to reorder them" style="text-align: center; color: var(--gray-600); font-size: 0.875rem; margin-top: 1rem;">
+                            <i class="fas fa-arrows-alt"></i> Drag to reorder questions
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outcomes Tab -->
+                <div class="tab-content slide-in-left" id="outcomes-tab">
+                    <div class="section elevated-card floating-shadow morphing-border">
+                        <div class="section-header">
+                            <i class="fas fa-trophy text-gradient"></i>
+                            <h3 class="text-gradient">Quiz Outcomes</h3>
+                            <span class="badge bounce-in">Step 3</span>
+                            <button class="btn btn-primary btn-sm neon-glow pulse-glow" style="margin-left: auto;" onclick="addOutcome()">
+                                <i class="fas fa-plus"></i> Add Outcome
+                            </button>
+                        </div>
+                        <div id="outcomes-container">
+                            <!-- Outcomes will be added here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Styling Tab -->
+                <div class="tab-content slide-in-left" id="styling-tab">
+                    <div class="section elevated-card floating-shadow morphing-border">
+                        <div class="section-header">
+                            <i class="fas fa-palette text-gradient"></i>
+                            <h3 class="text-gradient">Visual Styling</h3>
+                            <span class="badge bounce-in">Step 4</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Primary Color</label>
+                            <div class="color-palette">
+                                <div class="color-option selected micro-interaction neon-glow" style="background: #6366f1;" onclick="selectColor(this, '#6366f1')"></div>
+                                <div class="color-option micro-interaction neon-glow" style="background: #8b5cf6;" onclick="selectColor(this, '#8b5cf6')"></div>
+                                <div class="color-option micro-interaction neon-glow" style="background: #06b6d4;" onclick="selectColor(this, '#06b6d4')"></div>
+                                <div class="color-option micro-interaction neon-glow" style="background: #10b981;" onclick="selectColor(this, '#10b981')"></div>
+                                <div class="color-option micro-interaction neon-glow" style="background: #f59e0b;" onclick="selectColor(this, '#f59e0b')"></div>
+                                <div class="color-option micro-interaction neon-glow" style="background: #ef4444;" onclick="selectColor(this, '#ef4444')"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label tooltip" data-tooltip="Choose a font that matches your quiz personality">Font Style</label>
+                            <select class="form-input premium-input focus-ring" id="font-style" onchange="updateStyling()">
+                                <option value="Inter">🔥 Modern (Inter)</option>
+                                <option value="Georgia">📚 Classic (Georgia)</option>
+                                <option value="Trebuchet MS">🎨 Playful (Trebuchet)</option>
+                                <option value="Arial">⚡ Simple (Arial)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Layout Style</label>
+                            <select class="form-input premium-input focus-ring" id="layout-style" onchange="updateStyling()">
+                                <option value="modern">✨ Modern Cards</option>
+                                <option value="classic">📝 Classic List</option>
+                                <option value="minimal">🎯 Minimal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div class="tab-content slide-in-left" id="analytics-tab">
+                    <div class="section elevated-card floating-shadow morphing-border">
+                        <div class="section-header">
+                            <i class="fas fa-chart-bar text-gradient"></i>
+                            <h3 class="text-gradient">Quiz Analytics</h3>
+                            <span class="badge badge-success bounce-in">Live Data</span>
+                        </div>
+                        <div class="analytics-grid">
+                            <div class="analytics-card interactive-card glass-effect">
+                                <div class="analytics-number text-gradient" id="total-views">0</div>
+                                <div>👁️ Total Views</div>
+                            </div>
+                            <div class="analytics-card interactive-card glass-effect">
+                                <div class="analytics-number text-gradient" id="completions">0</div>
+                                <div>✅ Completions</div>
+                            </div>
+                            <div class="analytics-card interactive-card glass-effect">
+                                <div class="analytics-number text-gradient" id="completion-rate">0%</div>
+                                <div>📊 Completion Rate</div>
+                            </div>
+                            <div class="analytics-card interactive-card glass-effect">
+                                <div class="analytics-number text-gradient" id="avg-time">0s</div>
+                                <div>⏱️ Avg. Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="section elevated-card" style="text-align: center; background: linear-gradient(135deg, var(--light), white);">
+                    <button class="btn btn-primary btn-gradient neon-glow pulse-glow ripple-effect" onclick="generateQuiz()">
+                        <i class="fas fa-rocket"></i> Generate Quiz
+                    </button>
+                    <button class="btn btn-secondary micro-interaction hover-lift" onclick="saveQuiz()">
+                        <i class="fas fa-save"></i> Save Draft
+                    </button>
+                    <button class="btn btn-secondary micro-interaction hover-lift" onclick="shareQuiz()">
+                        <i class="fas fa-share"></i> Share Quiz
+                    </button>
+                </div>
+            </div>
+
+            <div class="preview-panel glass-card hover-lift slide-in-right smooth-border">
+                <h3><i class="fas fa-eye text-gradient"></i> Live Preview</h3>
+                <div id="quiz-preview">
+                    <div class="preview-quiz blur-backdrop smooth-border">
+                        <h2 id="preview-title" class="text-gradient">Your Quiz Title</h2>
+                        <p id="preview-description">Your quiz description will appear here...</p>
+                        <div id="preview-questions">
+                            <p style="text-align: center; color: var(--gray-600); margin: 2rem 0;">
+                                <i class="fas fa-magic"></i> Add questions to see the preview
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions Tab -->
+                <div class="tab-content" id="questions-tab">
+                    <div class="section">
+                        <div class="section-header">
+                            <i class="fas fa-question-circle"></i>
+                            <h3>Quiz Questions</h3>
+                            <button class="btn btn-primary btn-sm" style="margin-left: auto;" onclick="addQuestion()">
+                                <i class="fas fa-plus"></i> Add Question
+                            </button>
+                        </div>
+                        <div id="questions-container">
+                            <!-- Questions will be added here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outcomes Tab -->
+                <div class="tab-content" id="outcomes-tab">
+                    <div class="section">
+                        <div class="section-header">
+                            <i class="fas fa-trophy"></i>
+                            <h3>Quiz Outcomes</h3>
+                            <button class="btn btn-primary btn-sm" style="margin-left: auto;" onclick="addOutcome()">
+                                <i class="fas fa-plus"></i> Add Outcome
+                            </button>
+                        </div>
+                        <div id="outcomes-container">
+                            <!-- Outcomes will be added here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Styling Tab -->
+                <div class="tab-content" id="styling-tab">
+                    <div class="section">
+                        <div class="section-header">
+                            <i class="fas fa-palette"></i>
+                            <h3>Visual Styling</h3>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Primary Color</label>
+                            <div class="color-palette">
+                                <div class="color-option selected" style="background: #6366f1;" onclick="selectColor(this, '#6366f1')"></div>
+                                <div class="color-option" style="background: #8b5cf6;" onclick="selectColor(this, '#8b5cf6')"></div>
+                                <div class="color-option" style="background: #06b6d4;" onclick="selectColor(this, '#06b6d4')"></div>
+                                <div class="color-option" style="background: #10b981;" onclick="selectColor(this, '#10b981')"></div>
+                                <div class="color-option" style="background: #f59e0b;" onclick="selectColor(this, '#f59e0b')"></div>
+                                <div class="color-option" style="background: #ef4444;" onclick="selectColor(this, '#ef4444')"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Font Style</label>
+                            <select class="form-input" id="font-style" onchange="updateStyling()">
+                                <option value="Inter">Modern (Inter)</option>
+                                <option value="Georgia">Classic (Georgia)</option>
+                                <option value="Trebuchet MS">Playful (Trebuchet)</option>
+                                <option value="Arial">Simple (Arial)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Layout Style</label>
+                            <select class="form-input" id="layout-style" onchange="updateStyling()">
+                                <option value="modern">Modern Cards</option>
+                                <option value="classic">Classic List</option>
+                                <option value="minimal">Minimal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div class="tab-content" id="analytics-tab">
+                    <div class="section">
+                        <div class="section-header">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Quiz Analytics</h3>
+                        </div>
+                        <div class="analytics-grid">
+                            <div class="analytics-card">
+                                <div class="analytics-number" id="total-views">0</div>
+                                <div>Total Views</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-number" id="completions">0</div>
+                                <div>Completions</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-number" id="completion-rate">0%</div>
+                                <div>Completion Rate</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-number" id="avg-time">0s</div>
+                                <div>Avg. Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="section" style="text-align: center; border: none; background: var(--light);">
+                    <button class="btn btn-primary" onclick="generateQuiz()">
+                        <i class="fas fa-rocket"></i> Generate Quiz
+                    </button>
+                    <button class="btn btn-secondary" onclick="saveQuiz()">
+                        <i class="fas fa-save"></i> Save Draft
+                    </button>
+                    <button class="btn btn-secondary" onclick="shareQuiz()">
+                        <i class="fas fa-share"></i> Share Quiz
+                    </button>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <h3><i class="fas fa-eye"></i> Live Preview</h3>
+                <div id="quiz-preview">
+                    <div class="preview-quiz">
+                        <h2 id="preview-title">Your Quiz Title</h2>
+                        <p id="preview-description">Your quiz description will appear here...</p>
+                        <div id="preview-questions">
+                            <p style="text-align: center; color: var(--gray-600); margin: 2rem 0;">
+                                Add questions to see the preview
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal" id="share-modal">
+        <div class="share-modal-content">
+            <h3><i class="fas fa-share"></i> Share Your Quiz</h3>
+            <p>Your quiz has been generated! Share it with others:</p>
+            <div style="margin: 1rem 0;">
+                <input type="text" class="form-input" id="share-link" readonly value="https://quizbuilder.pro/quiz/abc123">
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn btn-primary" onclick="copyLink()">
+                    <i class="fas fa-copy"></i> Copy Link
+                </button>
+                <button class="btn btn-secondary" onclick="closeShareModal()">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check"></i> Action completed successfully!
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-action" onclick="generateQuiz()" title="Generate Quiz">
+        <i class="fas fa-rocket"></i>
+    </button>
+
+    <script>
+        // Global state
+        let quizData = {
+            title: '',
+            description: '',
+            category: 'personality',
+            questions: [],
+            outcomes: [],
+            styling: {
+                primaryColor: '#6366f1',
+                font: 'Inter',
+                layout: 'modern'
+            }
+        };
+
+        let questionCounter = 0;
+        let outcomeCounter = 0;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            addQuestion();
+            addOutcome();
+            updatePreview();
+            simulateAnalytics();
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Add new question
+        function addQuestion() {
+            questionCounter++;
+            const questionsContainer = document.getElementById('questions-container');
+            
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-item fade-in';
+            questionDiv.innerHTML = `
+                <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 1rem;">
+                    <h4>Question ${questionCounter}</h4>
+                    <button class="btn btn-danger btn-sm" onclick="removeQuestion(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Question Text</label>
+                    <input type="text" class="form-input" placeholder="What's your ideal weekend activity?" onchange="updatePreview()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Answer Options</label>
+                    <div class="answers-container">
+                        <div class="answer-option">
+                            <input type="text" class="form-input" placeholder="Reading a book" onchange="updatePreview()">
+                            <select class="form-input" style="width: 150px;" onchange="updatePreview()">
+                                <option value="A">Outcome A</option>
+                                <option value="B">Outcome B</option>
+                                <option value="C">Outcome C</option>
+                                <option value="D">Outcome D</option>
+                            </select>
+                        </div>
+                        <div class="answer-option">
+                            <input type="text" class="form-input" placeholder="Going to a party" onchange="updatePreview()">
+                            <select class="form-input" style="width: 150px;" onchange="updatePreview()">
+                                <option value="A">Outcome A</option>
+                                <option value="B">Outcome B</option>
+                                <option value="C">Outcome C</option>
+                                <option value="D">Outcome D</option>
+                            </select>
+                        </div>
+                        <div class="answer-option">
+                            <input type="text" class="form-input" placeholder="Outdoor adventure" onchange="updatePreview()">
+                            <select class="form-input" style="width: 150px;" onchange="updatePreview()">
+                                <option value="A">Outcome A</option>
+                                <option value="B">Outcome B</option>
+                                <option value="C">Outcome C</option>
+                                <option value="D">Outcome D</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="addAnswerOption(this)" style="margin-top: 0.5rem;">
+                        <i class="fas fa-plus"></i> Add Option
+                    </button>
+                </div>
+            `;
+            
+            questionsContainer.appendChild(questionDiv);
+            updatePreview();
+        }
+
+        // Add new outcome
+        function addOutcome() {
+            outcomeCounter++;
+            const outcomesContainer = document.getElementById('outcomes-container');
+            
+            const outcomeDiv = document.createElement('div');
+            outcomeDiv.className = 'outcome-item fade-in';
+            outcomeDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4>Outcome ${String.fromCharCode(64 + outcomeCounter)}</h4>
+                    <button class="btn btn-danger btn-sm" onclick="removeOutcome(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Outcome Title</label>
+                    <input type="text" class="form-input" placeholder="The Adventurer" onchange="updatePreview()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input form-textarea" placeholder="You're always ready for the next big adventure!" onchange="updatePreview()"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Image URL (optional)</label>
+                    <input type="url" class="form-input" placeholder="https://example.com/image.jpg" onchange="updatePreview()">
+                </div>
+            `;
+            
+            outcomesContainer.appendChild(outcomeDiv);
+            updatePreview();
+        }
+
+        // Remove question
+        function removeQuestion(button) {
+            button.closest('.question-item').remove();
+            updatePreview();
+        }
+
+        // Remove outcome
+        function removeOutcome(button) {
+            button.closest('.outcome-item').remove();
+            updatePreview();
+        }
+
+        // Add answer option
+        function addAnswerOption(button) {
+            const answersContainer = button.previousElementSibling;
+            const newOption = document.createElement('div');
+            newOption.className = 'answer-option';
+            newOption.innerHTML = `
+                <input type="text" class="form-input" placeholder="New answer option" onchange="updatePreview()">
+                <select class="form-input" style="width: 150px;" onchange="updatePreview()">
+                    <option value="A">Outcome A</option>
+                    <option value="B">Outcome B</option>
+                    <option value="C">Outcome C</option>
+                    <option value="D">Outcome D</option>
+                </select>
+                <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); updatePreview();">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            answersContainer.appendChild(newOption);
+        }
+
+        // Color selection
+        function selectColor(element, color) {
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            quizData.styling.primaryColor = color;
+            updateStyling();
+        }
+
+        // Update styling
+        function updateStyling() {
+            const fontStyle = document.getElementById('font-style').value;
+            const layoutStyle = document.getElementById('layout-style').value;
+            
+            quizData.styling.font = fontStyle;
+            quizData.styling.layout = layoutStyle;
+            
+            // Apply font changes
+            document.body.style.fontFamily = fontStyle + ', sans-serif';
+            
+            // Apply color changes
+            document.documentElement.style.setProperty('--primary', quizData.styling.primaryColor);
+            
+            updatePreview();
+        }
+
+        // Update preview
+        function updatePreview() {
+            const title = document.getElementById('quiz-title').value || 'Your Quiz Title';
+            const description = document.getElementById('quiz-description').value || 'Your quiz description will appear here...';
+            
+            document.getElementById('preview-title').textContent = title;
+            document.getElementById('preview-description').textContent = description;
+            
+            // Update questions preview
+            const questionsContainer = document.getElementById('preview-questions');
+            const questions = document.querySelectorAll('.question-item');
+            
+            if (questions.length === 0) {
+                questionsContainer.innerHTML = '<p style="text-align: center; color: var(--gray-600); margin: 2rem 0;">Add questions to see the preview</p>';
+                return;
+            }
+            
+            let previewHTML = '';
+            questions.forEach((question, index) => {
+                const questionText = question.querySelector('input[type="text"]').value || `Question ${index + 1}`;
+                const answers = question.querySelectorAll('.answer-option input[type="text"]');
+                
+                previewHTML += `
+                    <div class="preview-question">
+                        <h4>${questionText}</h4>
+                        <div class="preview-answers">
+                `;
+                
+                answers.forEach(answer => {
+                    if (answer.value.trim()) {
+                        previewHTML += `<button class="preview-answer">${answer.value}</button>`;
+                    }
+                });
+                
+                previewHTML += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            questionsContainer.innerHTML = previewHTML;
+        }
+
+        // Generate quiz
+        function generateQuiz() {
+            const title = document.getElementById('quiz-title').value;
+            if (!title.trim()) {
+                showToast('Please enter a quiz title', 'warning');
+                return;
+            }
+            
+            const questions = document.querySelectorAll('.question-item');
+            if (questions.length === 0) {
+                showToast('Please add at least one question', 'warning');
+                return;
+            }
+            
+            const outcomes = document.querySelectorAll('.outcome-item');
+            if (outcomes.length === 0) {
+                showToast('Please add at least one outcome', 'warning');
+                return;
+            }
+            
+            // Simulate quiz generation
+            showToast('Quiz generated successfully!', 'success');
+            
+            // Generate shareable link
+            const quizId = Math.random().toString(36).substr(2, 9);
+            document.getElementById('share-link').value = `https://quizbuilder.pro/quiz/${quizId}`;
+            
+            // Show share modal after a brief delay
+            setTimeout(() => {
+                document.getElementById('share-modal').classList.add('active');
+            }, 1000);
+            
+            // Update analytics
+            updateAnalytics();
+        }
+
+        // Save quiz
+        function saveQuiz() {
+            const title = document.getElementById('quiz-title').value;
+            if (!title.trim()) {
+                showToast('Please enter a quiz title before saving', 'warning');
+                return;
+            }
+            
+            // Simulate saving to localStorage (but using memory instead)
+            quizData.title = title;
+            quizData.description = document.getElementById('quiz-description').value;
+            quizData.lastSaved = new Date().toISOString();
+            
+            showToast('Quiz saved successfully!', 'success');
+        }
+
+        // Share quiz
+        function shareQuiz() {
+            const title = document.getElementById('quiz-title').value;
+            if (!title.trim()) {
+                showToast('Please generate your quiz first', 'warning');
+                return;
+            }
+            
+            document.getElementById('share-modal').classList.add('active');
+        }
+
+        // Close share modal
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.remove('active');
+        }
+
+        // Copy link to clipboard
+        function copyLink() {
+            const linkInput = document.getElementById('share-link');
+            linkInput.select();
+            document.execCommand('copy');
+            showToast('Link copied to clipboard!', 'success');
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'}"></i> ${message}`;
+            toast.style.background = type === 'success' ? 'var(--success)' : 'var(--warning)';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Simulate analytics data
+        function simulateAnalytics() {
+            const views = Math.floor(Math.random() * 1000) + 100;
+            const completions = Math.floor(views * (0.6 + Math.random() * 0.3));
+            const completionRate = Math.round((completions / views) * 100);
+            const avgTime = Math.floor(Math.random() * 180) + 60;
+            
+            document.getElementById('total-views').textContent = views.toLocaleString();
+            document.getElementById('completions').textContent = completions.toLocaleString();
+            document.getElementById('completion-rate').textContent = completionRate + '%';
+            document.getElementById('avg-time').textContent = avgTime + 's';
+        }
+
+        // Update analytics (called after quiz generation)
+        function updateAnalytics() {
+            const currentViews = parseInt(document.getElementById('total-views').textContent.replace(',', ''));
+            const newViews = currentViews + Math.floor(Math.random() * 50) + 10;
+            const newCompletions = Math.floor(newViews * (0.6 + Math.random() * 0.3));
+            const newCompletionRate = Math.round((newCompletions / newViews) * 100);
+            
+            document.getElementById('total-views').textContent = newViews.toLocaleString();
+            document.getElementById('completions').textContent = newCompletions.toLocaleString();
+            document.getElementById('completion-rate').textContent = newCompletionRate + '%';
+        }
+
+        // Advanced features
+
+        // Auto-save functionality
+        setInterval(() => {
+            const title = document.getElementById('quiz-title').value;
+            if (title.trim()) {
+                quizData.autoSaveTime = new Date().toISOString();
+                // In a real app, this would save to server
+                console.log('Auto-saved at:', quizData.autoSaveTime);
+            }
+        }, 30000); // Auto-save every 30 seconds
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveQuiz();
+                        break;
+                    case 'Enter':
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            generateQuiz();
+                        }
+                        break;
+                }
+            }
+        });
+
+        // Advanced styling options
+        function applyAdvancedStyling(theme) {
+            const themes = {
+                'dark': {
+                    background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+                    cardBg: '#333333',
+                    textColor: '#ffffff'
+                },
+                'pastel': {
+                    background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                    cardBg: '#ffffff',
+                    textColor: '#333333'
+                },
+                'neon': {
+                    background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a3a 100%)',
+                    cardBg: '#1e1e3f',
+                    textColor: '#00ff88'
+                }
+            };
+            
+            if (themes[theme]) {
+                document.body.style.background = themes[theme].background;
+                document.querySelectorAll('.builder-panel, .preview-panel').forEach(panel => {
+                    panel.style.background = themes[theme].cardBg;
+                    panel.style.color = themes[theme].textColor;
+                });
+            }
+        }
+
+        // Export quiz as JSON
+        function exportQuiz() {
+            const exportData = {
+                ...quizData,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+                type: 'application/json'
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${quizData.title || 'quiz'}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            showToast('Quiz exported successfully!', 'success');
+        }
+
+        // Import quiz from JSON
+        function importQuiz(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Populate form fields
+                    document.getElementById('quiz-title').value = importedData.title || '';
+                    document.getElementById('quiz-description').value = importedData.description || '';
+                    document.getElementById('quiz-category').value = importedData.category || 'personality';
+                    
+                    // Clear existing questions and outcomes
+                    document.getElementById('questions-container').innerHTML = '';
+                    document.getElementById('outcomes-container').innerHTML = '';
+                    
+                    // Rebuild questions and outcomes
+                    questionCounter = 0;
+                    outcomeCounter = 0;
+                    
+                    if (importedData.questions) {
+                        importedData.questions.forEach(() => addQuestion());
+                    }
+                    
+                    if (importedData.outcomes) {
+                        importedData.outcomes.forEach(() => addOutcome());
+                    }
+                    
+                    updatePreview();
+                    showToast('Quiz imported successfully!', 'success');
+                } catch (error) {
+                    showToast('Error importing quiz. Please check the file format.', 'warning');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Click outside to close modal
+        document.addEventListener('click', function(e) {
+            if (e.target === document.getElementById('share-modal')) {
+                closeShareModal();
+            }
+        });
+
+        // Enhanced preview with interactive elements
+        function enhancePreview() {
+            const previewAnswers = document.querySelectorAll('.preview-answer');
+            previewAnswers.forEach(answer => {
+                answer.addEventListener('click', function() {
+                    // Remove previous selections
+                    this.parentElement.querySelectorAll('.preview-answer').forEach(a => {
+                        a.style.background = 'white';
+                        a.style.color = 'var(--dark)';
+                    });
+                    
+                    // Highlight selected answer
+                    this.style.background = 'var(--primary)';
+                    this.style.color = 'white';
+                });
+            });
+        }
+
+        // Initialize enhanced preview after DOM updates
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.target.id === 'preview-questions') {
+                    enhancePreview();
+                }
+            });
+        });
+
+        observer.observe(document.getElementById('preview-questions'), {
+            childList: true,
+            subtree: true
+        });
+
+        // Performance optimization: Debounce preview updates
+        let previewUpdateTimer;
+        const originalUpdatePreview = updatePreview;
+        updatePreview = function() {
+            clearTimeout(previewUpdateTimer);
+            previewUpdateTimer = setTimeout(originalUpdatePreview, 300);
+        };
+
+        // Add drag and drop functionality for questions
+        function makeSortable() {
+            const container = document.getElementById('questions-container');
+            let draggedElement = null;
+
+            container.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('question-item')) {
+                    draggedElement = e.target;
+                    e.target.style.opacity = '0.5';
+                }
+            });
+
+            container.addEventListener('dragend', function(e) {
+                if (e.target.classList.contains('question-item')) {
+                    e.target.style.opacity = '';
+                    draggedElement = null;
+                }
+            });
+
+            container.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+
+            container.addEventListener('drop', function(e) {
+                e.preventDefault();
+                if (draggedElement && e.target.classList.contains('question-item')) {
+                    container.insertBefore(draggedElement, e.target.nextSibling);
+                    updatePreview();
+                }
+            });
+        }
+
+        // Initialize sortable functionality
+        setTimeout(makeSortable, 1000);
+    </script>
+</body>
+</html>
