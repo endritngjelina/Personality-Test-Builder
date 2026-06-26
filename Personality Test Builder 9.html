@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality Test Builder Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-hover: #3a56d4;
+            --secondary: #06d6a0;
+            --danger: #ef476f;
+            --warning: #ffd166;
+            --success: #06d6a0;
+            --dark: #1e1e2d;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 25px rgba(0,0,0,0.15);
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: var(--gradient);
+            border-radius: var(--border-radius);
+            color: white;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.2), transparent 70%);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .question-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .question-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .answer-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            transition: var(--transition);
+        }
+
+        .answer-option:hover {
+            border-color: var(--primary);
+        }
+
+        .outcome-item {
+            background: linear-gradient(135deg, #4361ee20, #3a0ca320);
+            border: 2px solid #4361ee40;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .outcome-item:hover {
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .preview-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            margin-top: 30px;
+        }
+
+        .quiz-preview {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: var(--gradient);
+            border-radius: var(--border-radius);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.2), transparent 70%);
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            transition: width 0.5s ease;
+        }
+
+        .result-card {
+            background: var(--gradient);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            text-align: center;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at bottom right, rgba(255,255,255,0.2), transparent 70%);
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .result-description {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        .share-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .share-url {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            margin: 15px 0;
+            user-select: all;
+        }
+
+        .analytics-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab:last-child {
+            border-right: none;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .fab {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            background: var(--primary-hover);
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 120%;
+            right: 0;
+            background: var(--dark);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        .validation-error {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .question-type {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .type-btn.active {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .type-btn:hover:not(.active) {
+            border-color: var(--gray);
+        }
+
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+            color: #e0e6ed;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .floating-actions {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🧠 Personality Test Builder Pro</h1>
+            <p>Create engaging, shareable personality quizzes with advanced analytics and AI insights</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('builder')">📝 Quiz Builder</button>
+            <button class="tab" onclick="switchTab('preview')">👀 Live Preview</button>
+            <button class="tab" onclick="switchTab('analytics')">📊 Advanced Analytics</button>
+            <button class="tab" onclick="switchTab('share')">🚀 Share & Export</button>
+        </div>
+
+        <!-- Quiz Builder Tab -->
+        <div id="builder" class="tab-content active">
+            <div class="main-content">
+                <div class="panel">
+                    <h2>🎯 Quiz Configuration</h2>
+                    
+                    <div class="form-group">
+                        <label for="quizTitle">Quiz Title *</label>
+                        <input type="text" id="quizTitle" class="form-control" placeholder="What's Your Personality Type?" maxlength="100">
+                        <div class="validation-error" id="titleError">Title is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quizDescription">Description</label>
+                        <textarea id="quizDescription" class="form-control" rows="3" placeholder="Discover your unique personality traits with this fun quiz!" maxlength="500"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quizTheme">Visual Theme</label>
+                        <select id="quizTheme" class="form-control">
+                            <option value="default">🌈 Default Gradient</option>
+                            <option value="ocean">🌊 Ocean Blue</option>
+                            <option value="sunset">🌅 Sunset Orange</option>
+                            <option value="forest">🌲 Forest Green</option>
+                            <option value="royal">👑 Royal Purple</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="shuffleQuestions"> Randomize Question Order
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showProgress"> Show Progress Bar
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="aiAnalysis" checked> Enable AI Personality Analysis
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>❓ Questions</h2>
+                    <div id="questionsList">
+                        <div class="empty-state">
+                            <i>❓</i>
+                            <h3>No questions yet</h3>
+                            <p>Add your first question to get started</p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="addQuestion()">
+                        ➕ Add Question
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>🎭 Personality Outcomes</h2>
+                <div id="outcomesList">
+                    <div class="empty-state">
+                        <i>🧩</i>
+                        <h3>No outcomes yet</h3>
+                        <p>Add personality outcomes to complete your quiz</p>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="addOutcome()">
+                    ➕ Add Outcome
+                </button>
+            </div>
+        </div>
+
+        <!-- Preview Tab -->
+        <div id="preview" class="tab-content">
+            <div class="preview-container">
+                <div id="quizPreview" class="quiz-preview">
+                    <div class="quiz-header">
+                        <h2 id="previewTitle">Your Quiz Title</h2>
+                        <p id="previewDescription">Quiz description will appear here</p>
+                    </div>
+                    
+                    <div class="empty-state">
+                        <i>👀</i>
+                        <h3>Preview Your Quiz</h3>
+                        <p>Add questions and outcomes to see the preview</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-panel">
+                <h2>📈 Advanced Quiz Analytics</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalViews">1,248</span>
+                        <span class="stat-label">Total Views</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="completions">893</span>
+                        <span class="stat-label">Completions</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="completionRate">71.6%</span>
+                        <span class="stat-label">Completion Rate</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="avgTime">42s</span>
+                        <span class="stat-label">Avg. Time</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3>📊 Result Distribution</h3>
+                    <div id="resultChart" style="height: 300px; margin-top: 20px;">
+                        <canvas id="chartCanvas"></canvas>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3>🚀 Performance Metrics</h3>
+                    <div id="performanceChart" style="height: 300px; margin-top: 20px;">
+                        <canvas id="performanceCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Tab -->
+        <div id="share" class="tab-content">
+            <div class="share-section">
+                <h2>🚀 Share Your Quiz</h2>
+                <p>Your quiz is ready to share! Copy the link below or use the social sharing buttons.</p>
+                
+                <div class="share-url" id="shareUrl">
+                    https://personalitytest.pro/quiz/your-quiz-id-123
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="copyToClipboard()">📋 Copy Link</button>
+                    <button class="btn btn-secondary" onclick="shareOnSocial('twitter')">🐦 Twitter</button>
+                    <button class="btn btn-secondary" onclick="shareOnSocial('facebook')">📘 Facebook</button>
+                    <button class="btn btn-warning" onclick="exportQuiz()">💾 Export Quiz</button>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+                    <div>
+                        <h3>📱 QR Code</h3>
+                        <div id="qrCode" style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; display: inline-block; margin: 15px 0;"></div>
+                        <p><small>Scan to share your quiz instantly</small></p>
+                    </div>
+                    
+                    <div>
+                        <h3>📧 Email Embed</h3>
+                        <textarea class="form-control" rows="4" style="margin: 15px 0; font-family: monospace; font-size: 14px; resize: none;">&lt;a href="https://personalitytest.pro/quiz/your-quiz-id-123"&gt;Take my Personality Quiz&lt;/a&gt;</textarea>
+                        <p><small>Copy this code to embed in emails</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-actions">
+        <button class="fab tooltip" data-tooltip="Save Quiz" onclick="saveQuiz()">💾</button>
+        <button class="fab tooltip" data-tooltip="AI Suggestions" onclick="getAISuggestions()">🤖</button>
+        <button class="fab tooltip" data-tooltip="Help" onclick="showHelp()">❓</button>
+    </div>
+
+    <script>
+        // Application State
+        let quiz = {
+            title: 'Discover Your Personality Type',
+            description: 'Take this quiz to uncover your unique personality traits and characteristics',
+            theme: 'default',
+            questions: [
+                {
+                    id: 1,
+                    text: 'When faced with a problem, you tend to:',
+                    type: 'multiple-choice',
+                    answers: [
+                        { text: 'Analyze it logically', outcome: 'analytical' },
+                        { text: 'Trust your intuition', outcome: 'intuitive' },
+                        { text: 'Seek others opinions', outcome: 'social' },
+                        { text: 'Take immediate action', outcome: 'proactive' }
+                    ]
+                },
+                {
+                    id: 2,
+                    text: 'How do you prefer to spend your free time?',
+                    type: 'multiple-choice',
+                    answers: [
+                        { text: 'Reading or learning something new', outcome: 'intellectual' },
+                        { text: 'Socializing with friends', outcome: 'social' },
+                        { text: 'Exercising or being active', outcome: 'active' },
+                        { text: 'Relaxing and recharging alone', outcome: 'introspective' }
+                    ]
+                }
+            ],
+            outcomes: [
+                {
+                    id: 'analytical',
+                    title: 'The Analyst',
+                    description: 'You have a logical and systematic approach to life. You excel at breaking down complex problems and finding data-driven solutions. Your analytical mind makes you a valuable asset in any team.',
+                    color: '#4361ee'
+                },
+                {
+                    id: 'intuitive',
+                    title: 'The Visionary',
+                    description: 'You see possibilities where others see obstacles. Your intuitive nature helps you connect ideas in innovative ways and anticipate future trends. Trust your instincts - they rarely lead you astray.',
+                    color: '#7209b7'
+                }
+            ],
+            settings: {
+                shuffleQuestions: true,
+                showProgress: true,
+                aiAnalysis: true
+            },
+            analytics: {
+                views: 1248,
+                completions: 893,
+                startTimes: [],
+                resultDistribution: {
+                    analytical: 32,
+                    intuitive: 28,
+                    social: 18,
+                    proactive: 22
+                }
+            }
+        };
+
+        let currentPreviewQuestion = 0;
+        let previewAnswers = [];
+
+        // Theme configurations
+        const themes = {
+            default: { primary: '#4361ee', secondary: '#3a0ca3' },
+            ocean: { primary: '#2980b9', secondary: '#3498db' },
+            sunset: { primary: '#e74c3c', secondary: '#f39c12' },
+            forest: { primary: '#27ae60', secondary: '#2ecc71' },
+            royal: { primary: '#8e44ad', secondary: '#9b59b6' }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromStorage();
+            renderQuestions();
+            renderOutcomes();
+            updatePreview();
+            updateAnalytics();
+            generateQRCode();
+            renderCharts();
+            
+            // Auto-save functionality
+            setInterval(autoSave, 30000);
+            
+            // Add event listeners for real-time updates
+            document.getElementById('quizTitle').addEventListener('input', updatePreview);
+            document.getElementById('quizDescription').addEventListener('input', updatePreview);
+            document.getElementById('quizTheme').addEventListener('change', applyTheme);
+            document.getElementById('aiAnalysis').addEventListener('change', function() {
+                quiz.settings.aiAnalysis = this.checked;
+            });
+        });
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            if (tabName === 'preview') {
+                updatePreview();
+            } else if (tabName === 'analytics') {
+                updateAnalytics();
+                renderCharts();
+            } else if (tabName === 'share') {
+                generateQRCode();
+            }
+        }
+
+        // Question management
+        function addQuestion() {
+            const question = {
+                id: Date.now(),
+                text: '',
+                type: 'multiple-choice',
+                answers: [
+                    { text: '', outcome: '' },
+                    { text: '', outcome: '' }
+                ]
+            };
+            
+            quiz.questions.push(question);
+            renderQuestions();
+            updatePreview();
+        }
+
+        function removeQuestion(questionId) {
+            if (confirm('Are you sure you want to remove this question?')) {
+                quiz.questions = quiz.questions.filter(q => q.id !== questionId);
+                renderQuestions();
+                updatePreview();
+            }
+        }
+
+        function addAnswer(questionId) {
+            const question = quiz.questions.find(q => q.id === questionId);
+            if (question && question.answers.length < 6) {
+                question.answers.push({ text: '', outcome: '' });
+                renderQuestions();
+                updatePreview();
+            }
+        }
+
+        function removeAnswer(questionId, answerIndex) {
+            const question = quiz.questions.find(q => q.id === questionId);
+            if (question && question.answers.length > 2) {
+                question.answers.splice(answerIndex, 1);
+                renderQuestions();
+                updatePreview();
+            }
+        }
+
+        function changeQuestionType(questionId, type) {
+            const question = quiz.questions.find(q => q.id === questionId);
+            if (question) {
+                question.type = type;
+                renderQuestions();
+                updatePreview();
+            }
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsList');
+            if (quiz.questions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i>❓</i>
+                        <h3>No questions yet</h3>
+                        <p>Add your first question to get started</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            quiz.questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item fade-in';
+                questionDiv.innerHTML = `
+                    <div class="question-header">
+                        <div style="display: flex; align-items: center;">
+                            <div class="question-number">${index + 1}</div>
+                            <input type="text" class="form-control" placeholder="Enter your question..." 
+                                   value="${question.text}" 
+                                   onchange="updateQuestion(${question.id}, this.value)"
+                                   style="flex: 1;">
+                        </div>
+                        <button class="btn btn-danger btn-small" onclick="removeQuestion(${question.id})">🗑️</button>
+                    </div>
+                    
+                    <div class="question-type">
+                        <div class="type-btn ${question.type === 'multiple-choice' ? 'active' : ''}" 
+                             onclick="changeQuestionType(${question.id}, 'multiple-choice')">
+                            Multiple Choice
+                        </div>
+                        <div class="type-btn ${question.type === 'image-choice' ? 'active' : ''}" 
+                             onclick="changeQuestionType(${question.id}, 'image-choice')">
+                            Image Choice
+                        </div>
+                        <div class="type-btn ${question.type === 'slider' ? 'active' : ''}" 
+                             onclick="changeQuestionType(${question.id}, 'slider')">
+                            Slider Scale
+                        </div>
+                    </div>
+                    
+                    <div class="answers-section">
+                        ${question.answers.map((answer, answerIndex) => `
+                            <div class="answer-option">
+                                ${question.type === 'image-choice' ? `
+                                    <div>
+                                        <input type="text" class="form-control" placeholder="Image URL (optional)" 
+                                               value="${answer.image || ''}"
+                                               onchange="updateAnswer(${question.id}, ${answerIndex}, 'image', this.value)"
+                                               style="margin-bottom: 5px;">
+                                        <img src="${answer.image || ''}" class="image-preview" 
+                                             onerror="this.style.display='none'" 
+                                             ${answer.image ? 'style="display:block"' : ''}>
+                                    </div>
+                                ` : ''}
+                                <input type="text" class="form-control" placeholder="Answer option..." 
+                                       value="${answer.text}"
+                                       onchange="updateAnswer(${question.id}, ${answerIndex}, 'text', this.value)"
+                                       style="flex: 2;">
+                                <select class="form-control" style="flex: 1;" 
+                                        onchange="updateAnswer(${question.id}, ${answerIndex}, 'outcome', this.value)">
+                                    <option value="">Select outcome...</option>
+                                    ${quiz.outcomes.map(outcome => 
+                                        `<option value="${outcome.id}" ${answer.outcome === outcome.id ? 'selected' : ''}>${outcome.title}</option>`
+                                    ).join('')}
+                                </select>
+                                ${question.answers.length > 2 ? 
+                                    `<button class="btn btn-danger btn-small" onclick="removeAnswer(${question.id}, ${answerIndex})">❌</button>` 
+                                    : ''
+                                }
+                            </div>
+                        `).join('')}
+                        
+                        ${question.answers.length < 6 ? 
+                            `<button class="btn btn-secondary btn-small" onclick="addAnswer(${question.id})">➕ Add Answer</button>` 
+                            : ''
+                        }
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function updateQuestion(questionId, text) {
+            const question = quiz.questions.find(q => q.id === questionId);
+            if (question) {
+                question.text = text;
+                updatePreview();
+            }
+        }
+
+        function updateAnswer(questionId, answerIndex, field, value) {
+            const question = quiz.questions.find(q => q.id === questionId);
+            if (question && question.answers[answerIndex]) {
+                question.answers[answerIndex][field] = value;
+                updatePreview();
+                
+                // Update image preview
+                if (field === 'image' && value) {
+                    const img = event.target.parentElement.querySelector('.image-preview');
+                    if (img) {
+                        img.src = value;
+                        img.style.display = 'block';
+                    }
+                }
+            }
+        }
+
+        // Outcome management
+        function addOutcome() {
+            const outcome = {
+                id: 'outcome-' + Date.now(),
+                title: '',
+                description: '',
+                color: '#4361ee'
+            };
+            
+            quiz.outcomes.push(outcome);
+            renderOutcomes();
+            renderQuestions(); // Re-render to update dropdowns
+        }
+
+        function removeOutcome(outcomeId) {
+            if (confirm('Are you sure you want to remove this outcome? This will affect related questions.')) {
+                quiz.outcomes = quiz.outcomes.filter(o => o.id !== outcomeId);
+                renderOutcomes();
+                renderQuestions();
+                updatePreview();
+            }
+        }
+
+        function renderOutcomes() {
+            const container = document.getElementById('outcomesList');
+            if (quiz.outcomes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i>🧩</i>
+                        <h3>No outcomes yet</h3>
+                        <p>Add personality outcomes to complete your quiz</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            quiz.outcomes.forEach(outcome => {
+                const outcomeDiv = document.createElement('div');
+                outcomeDiv.className = 'outcome-item fade-in';
+                outcomeDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                        <div style="flex: 1; margin-right: 15px;">
+                            <input type="text" class="form-control" placeholder="Outcome title (e.g., 'The Leader')" 
+                                   value="${outcome.title}" 
+                                   onchange="updateOutcome('${outcome.id}', 'title', this.value)"
+                                   style="margin-bottom: 10px;">
+                            <textarea class="form-control" rows="3" placeholder="Describe this personality type..." 
+                                      onchange="updateOutcome('${outcome.id}', 'description', this.value)">${outcome.description}</textarea>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="color" value="${outcome.color}" 
+                                   onchange="updateOutcome('${outcome.id}', 'color', this.value)"
+                                   style="width: 50px; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
+                            <button class="btn btn-danger btn-small" onclick="removeOutcome('${outcome.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(outcomeDiv);
+            });
+        }
+
+        function updateOutcome(outcomeId, field, value) {
+            const outcome = quiz.outcomes.find(o => o.id === outcomeId);
+            if (outcome) {
+                outcome[field] = value;
+                if (field === 'title') {
+                    renderQuestions(); // Re-render to update dropdowns
+                }
+                updatePreview();
+            }
+        }
+
+        // Preview functionality
+        function updatePreview() {
+            quiz.title = document.getElementById('quizTitle').value || 'Your Quiz Title';
+            quiz.description = document.getElementById('quizDescription').value || 'Quiz description will appear here.';
+            quiz.theme = document.getElementById('quizTheme').value;
+            quiz.settings.shuffleQuestions = document.getElementById('shuffleQuestions').checked;
+            quiz.settings.showProgress = document.getElementById('showProgress').checked;
+            
+            renderPreview();
+        }
+
+        function renderPreview() {
+            const container = document.getElementById('quizPreview');
+            
+            if (quiz.questions.length === 0 || quiz.outcomes.length === 0) {
+                container.innerHTML = `
+                    <div class="quiz-header">
+                        <h2>${quiz.title}</h2>
+                        <p>${quiz.description}</p>
+                    </div>
+                    <div class="empty-state">
+                        <i>👀</i>
+                        <h3>Preview Your Quiz</h3>
+                        <p>Add questions and outcomes to see the preview</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="quiz-header">
+                    <h2>${quiz.title}</h2>
+                    <p>${quiz.description}</p>
+                </div>
+                
+                ${quiz.settings.showProgress ? `
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(currentPreviewQuestion / quiz.questions.length) * 100}%"></div>
+                    </div>
+                ` : ''}
+                
+                <div class="quiz-question">
+                    <h3>Question ${currentPreviewQuestion + 1} of ${quiz.questions.length}</h3>
+                    <p>${quiz.questions[currentPreviewQuestion].text}</p>
+                    
+                    <div class="quiz-options">
+                        ${quiz.questions[currentPreviewQuestion].answers.map((answer, i) => `
+                            <div class="quiz-option ${previewAnswers[currentPreviewQuestion] === i ? 'selected' : ''}" 
+                                 onclick="selectPreviewAnswer(${i})">
+                                ${quiz.questions[currentPreviewQuestion].type === 'image-choice' && answer.image ? `
+                                    <img src="${answer.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px; margin-right: 10px;">
+                                ` : ''}
+                                ${answer.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="prevQuestion()" ${currentPreviewQuestion === 0 ? 'disabled' : ''}>
+                        ← Previous
+                    </button>
+                    <button class="btn" onclick="nextQuestion()">
+                        ${currentPreviewQuestion === quiz.questions.length - 1 ? 'See Results' : 'Next →'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectPreviewAnswer(index) {
+            previewAnswers[currentPreviewQuestion] = index;
+            renderPreview();
+        }
+
+        function nextQuestion() {
+            if (currentPreviewQuestion < quiz.questions.length - 1) {
+                currentPreviewQuestion++;
+                renderPreview();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentPreviewQuestion > 0) {
+                currentPreviewQuestion--;
+                renderPreview();
+            }
+        }
+
+        function showResults() {
+            // Calculate results based on answers
+            const resultCounts = {};
+            quiz.outcomes.forEach(outcome => {
+                resultCounts[outcome.id] = 0;
+            });
+            
+            previewAnswers.forEach((answerIndex, qIndex) => {
+                const outcome = quiz.questions[qIndex].answers[answerIndex].outcome;
+                if (outcome && resultCounts[outcome] !== undefined) {
+                    resultCounts[outcome]++;
+                }
+            });
+            
+            // Find the outcome with the highest count
+            let maxCount = 0;
+            let resultId = quiz.outcomes[0].id;
+            
+            for (const [id, count] of Object.entries(resultCounts)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    resultId = id;
+                }
+            }
+            
+            const result = quiz.outcomes.find(o => o.id === resultId);
+            
+            document.getElementById('quizPreview').innerHTML = `
+                <div class="quiz-header">
+                    <h2>${quiz.title}</h2>
+                    <p>${quiz.description}</p>
+                </div>
+                
+                <div class="result-card">
+                    <h3 class="result-title">${result.title}</h3>
+                    <p class="result-description">${result.description}</p>
+                    
+                    ${quiz.settings.aiAnalysis ? `
+                        <div style="margin-top: 20px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px;">
+                            <h4>🤖 AI Analysis</h4>
+                            <p>Based on your answers, our AI model detects strong leadership potential and creative problem-solving skills. You likely thrive in environments where you can take initiative and innovate.</p>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="share-section" style="margin-top: 20px;">
+                    <h3>Share Your Results</h3>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                        <button class="btn btn-secondary">📱 Twitter</button>
+                        <button class="btn btn-secondary">📘 Facebook</button>
+                        <button class="btn">📋 Copy Link</button>
+                    </div>
+                </div>
+                
+                <button class="btn" style="margin-top: 20px; width: 100%;" onclick="restartPreview()">
+                    🔄 Take Quiz Again
+                </button>
+            `;
+        }
+
+        function restartPreview() {
+            currentPreviewQuestion = 0;
+            previewAnswers = [];
+            renderPreview();
+        }
+
+        // Analytics functionality
+        function updateAnalytics() {
+            document.getElementById('totalViews').textContent = quiz.analytics.views.toLocaleString();
+            document.getElementById('completions').textContent = quiz.analytics.completions.toLocaleString();
+            document.getElementById('completionRate').textContent = 
+                Math.round((quiz.analytics.completions / quiz.analytics.views) * 100) + '%';
+            document.getElementById('avgTime').textContent = '42s';
+        }
+
+        function renderCharts() {
+            // Result distribution chart
+            const ctx = document.getElementById('chartCanvas').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: quiz.outcomes.map(o => o.title),
+                    datasets: [{
+                        label: 'Result Distribution',
+                        data: Object.values(quiz.analytics.resultDistribution),
+                        backgroundColor: quiz.outcomes.map(o => o.color),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Performance chart
+            const perfCtx = document.getElementById('performanceCanvas').getContext('2d');
+            new Chart(perfCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Completions',
+                        data: [120, 190, 170, 220, 260, 300, 350],
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }, {
+                        label: 'Shares',
+                        data: [80, 110, 105, 150, 180, 210, 240],
+                        borderColor: '#06d6a0',
+                        backgroundColor: 'rgba(6, 214, 160, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Sharing functionality
+        function generateQRCode() {
+            QRCode.toCanvas(document.getElementById('qrCode'), 
+                'https://personalitytest.pro/quiz/your-quiz-id-123', 
+                { width: 180, margin: 1 }, 
+                function (error) {
+                    if (error) console.error(error)
+                }
+            );
+        }
+
+        function copyToClipboard() {
+            const url = document.getElementById('shareUrl');
+            navigator.clipboard.writeText(url.textContent);
+            
+            // Show feedback
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✓ Copied!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+
+        function shareOnSocial(platform) {
+            let url = 'https://personalitytest.pro/quiz/your-quiz-id-123';
+            let shareUrl;
+            
+            switch(platform) {
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=Check out my personality quiz!&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    break;
+            }
+            
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+
+        function exportQuiz() {
+            // Create a JSON blob
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(quiz, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "personality-quiz.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        // Theme functions
+        function applyTheme() {
+            const theme = document.getElementById('quizTheme').value;
+            const root = document.documentElement;
+            
+            if (theme === 'ocean') {
+                root.style.setProperty('--primary', '#2980b9');
+                root.style.setProperty('--primary-hover', '#2573a7');
+                root.style.setProperty('--gradient', 'linear-gradient(135deg, #2980b9 0%, #3498db 100%)');
+            } else if (theme === 'sunset') {
+                root.style.setProperty('--primary', '#e74c3c');
+                root.style.setProperty('--primary-hover', '#d62c1a');
+                root.style.setProperty('--gradient', 'linear-gradient(135deg, #e74c3c 0%, #f39c12 100%)');
+            } else if (theme === 'forest') {
+                root.style.setProperty('--primary', '#27ae60');
+                root.style.setProperty('--primary-hover', '#219653');
+                root.style.setProperty('--gradient', 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)');
+            } else if (theme === 'royal') {
+                root.style.setProperty('--primary', '#8e44ad');
+                root.style.setProperty('--primary-hover', '#7d3c98');
+                root.style.setProperty('--gradient', 'linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%)');
+            } else {
+                root.style.setProperty('--primary', '#4361ee');
+                root.style.setProperty('--primary-hover', '#3a56d4');
+                root.style.setProperty('--gradient', 'linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%)');
+            }
+            
+            updatePreview();
+        }
+
+        // Utility functions
+        function saveQuiz() {
+            localStorage.setItem('personalityQuiz', JSON.stringify(quiz));
+            
+            // Show feedback
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✓ Saved!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+
+        function autoSave() {
+            localStorage.setItem('personalityQuiz', JSON.stringify(quiz));
+        }
+
+        function loadFromStorage() {
+            const savedQuiz = localStorage.getItem('personalityQuiz');
+            if (savedQuiz) {
+                quiz = JSON.parse(savedQuiz);
+                document.getElementById('quizTitle').value = quiz.title;
+                document.getElementById('quizDescription').value = quiz.description;
+                document.getElementById('quizTheme').value = quiz.theme;
+                document.getElementById('shuffleQuestions').checked = quiz.settings.shuffleQuestions;
+                document.getElementById('showProgress').checked = quiz.settings.showProgress;
+                document.getElementById('aiAnalysis').checked = quiz.settings.aiAnalysis;
+                applyTheme();
+            }
+        }
+
+        function getAISuggestions() {
+            alert("🤖 AI suggestions feature would connect to an API to generate personality insights, question improvements, and outcome refinements based on best practices in psychology.");
+        }
+
+        function showHelp() {
+            alert("❓ Help documentation would provide guidance on creating effective personality quizzes, interpreting analytics, and sharing your quiz with audiences.");
+        }
+    </script>
+</body>
+</html>
